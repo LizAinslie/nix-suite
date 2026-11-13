@@ -6,5 +6,6 @@
     ./gc.nix
     ./nvd-diff.nix
     ./rebuild-helpers.nix
+    ./shell.nix
   ];
 }

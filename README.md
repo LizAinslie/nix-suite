@@ -39,10 +39,18 @@ You can also import a single tool, like `nixosModules.gc` or
 
 | tool | NixOS | home-manager | what it does |
 |---|---|---|---|
+| `shell` | yes | yes | Fish-first helpers: enables `fish`, installs `desktop-file-utils`, and adds `ll` / `la` / `udb` (refresh `.desktop` DBs + restart Vicinae). Fish gets abbreviations; bash/zsh get aliases. |
 | `rebuild-helpers` | yes | yes | Shell shortcuts for a flake checkout: `nrs` runs `sudo nixos-rebuild switch --flake <flake>#<host>`, `nfu` runs `nix flake update <flake>`, and `nadd` runs `git -C <flake> add .`. Fish gets abbreviations, and bash and zsh get aliases, but only for the shells you have enabled. |
 | `crypt-keeper` | yes | yes | `crypt-keeper open\|close <alias>` unlocks a LUKS drive and mounts it, or unmounts it and locks it again, using a declarative drive table. |
 | `nvd-diff` | yes | – | Prints an [nvd](https://git.sr.ht/~khumba/nvd) package diff (added, removed, and changed versions) on every system activation. |
 | `gc` | yes | – | Runs `nix.gc` and `nix.optimise` automatically, weekly by default, keeping 14 days of generations. Every value uses `mkDefault`, so your host's own settings win. |
+
+### shell
+
+```nix
+nix-suite.shell.enable = true;   # fish + ll / la / udb
+# udb expands to: update-desktop-database … ; systemctl --user try-restart vicinae
+```
 
 ### rebuild-helpers
 

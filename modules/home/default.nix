@@ -4,5 +4,6 @@
   imports = [
     ./crypt-keeper.nix
     ./rebuild-helpers.nix
+    ./shell.nix
   ];
 }

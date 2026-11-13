@@ -20,12 +20,14 @@
         gc = ./modules/nixos/gc.nix;
         nvd-diff = ./modules/nixos/nvd-diff.nix;
         rebuild-helpers = ./modules/nixos/rebuild-helpers.nix;
+        shell = ./modules/nixos/shell.nix;
       };
 
       homeModules = {
         default = ./modules/home;
         crypt-keeper = ./modules/home/crypt-keeper.nix;
         rebuild-helpers = ./modules/home/rebuild-helpers.nix;
+        shell = ./modules/home/shell.nix;
       };
       # Older name, same modules.
       homeManagerModules = self.homeModules;
@@ -59,6 +61,7 @@
               programs.zsh.enable = true;
               nix-suite = {
                 rebuild-helpers.enable = true;
+                shell.enable = true;
                 nvd-diff.enable = true;
                 gc.enable = true;
                 crypt-keeper = {
@@ -78,6 +81,8 @@
         in
         assert off.system.build.toplevel.drvPath == plain.system.build.toplevel.drvPath;
         assert on.programs.fish.shellAbbrs.nrs == expectedNrs;
+        assert on.programs.fish.shellAbbrs ? udb;
+        assert on.programs.fish.shellAbbrs.ll == "ls -l";
         assert on.programs.zsh.shellAliases.nrs == expectedNrs;
         assert on.programs.bash.shellAliases.nadd == "git -C /etc/nixos add .";
         {
