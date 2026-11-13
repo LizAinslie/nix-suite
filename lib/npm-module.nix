@@ -78,6 +78,7 @@ let
     ''
       set -q NPM_CONFIG_PREFIX; or set -gx NPM_CONFIG_PREFIX ${fishExpr paths.npmPrefix}
       set -q NPM_CONFIG_CACHE; or set -gx NPM_CONFIG_CACHE ${fishExpr paths.npmCache}
+      mkdir -p $NPM_CONFIG_PREFIX/bin $NPM_CONFIG_CACHE 2>/dev/null
       fish_add_path -g $NPM_CONFIG_PREFIX/bin
     ''
     + lib.optionalString cfg.yarn.enable ''
@@ -87,11 +88,13 @@ let
     + lib.optionalString cfg.pnpm.enable ''
       set -q PNPM_HOME; or set -gx PNPM_HOME ${fishExpr paths.pnpmHome}
       set -q npm_config_store_dir; or set -gx npm_config_store_dir ${fishExpr paths.pnpmStore}
+      mkdir -p $PNPM_HOME/bin $npm_config_store_dir 2>/dev/null
       fish_add_path -g $PNPM_HOME $PNPM_HOME/bin
     ''
     + lib.optionalString cfg.bun.enable ''
       set -q BUN_INSTALL; or set -gx BUN_INSTALL ${fishExpr paths.bunInstall}
       set -q BUN_INSTALL_CACHE_DIR; or set -gx BUN_INSTALL_CACHE_DIR ${fishExpr paths.bunCache}
+      mkdir -p $BUN_INSTALL/bin $BUN_INSTALL_CACHE_DIR 2>/dev/null
       fish_add_path -g $BUN_INSTALL/bin
     '';
 
