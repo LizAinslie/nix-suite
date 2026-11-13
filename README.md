@@ -40,7 +40,7 @@ You can also import a single tool, like `nixosModules.gc` or
 | tool | NixOS | home-manager | what it does |
 |---|---|---|---|
 | `shell` | yes | yes | Fish-first helpers: enables `fish`, installs `desktop-file-utils`, and adds `ll` / `la` / `udb` (refresh `.desktop` DBs + restart Vicinae). Fish gets abbreviations; bash/zsh get aliases. |
-| `npm` | yes | yes | User-global npm layout outside the Nix store: `NPM_CONFIG_PREFIX` (`~/.local/share/npm`), `NPM_CONFIG_CACHE` (`~/.cache/npm`), `<prefix>/bin` on `PATH`, and dirs created on login/activation. |
+| `npm` | yes | yes | User-global JS layout outside the Nix store: npm prefix/cache, yarn cache/global, pnpm home/store, bun install/cache; their bin dirs on `PATH`; dirs created on login/activation. |
 | `rebuild-helpers` | yes | yes | Shell shortcuts for a flake checkout: `nrs` runs `sudo nixos-rebuild switch --flake <flake>#<host>`, `nfu` runs `nix flake update <flake>`, and `nadd` runs `git -C <flake> add .`. Fish gets abbreviations, and bash and zsh get aliases, but only for the shells you have enabled. |
 | `crypt-keeper` | yes | yes | `crypt-keeper open\|close <alias>` unlocks a LUKS drive and mounts it, or unmounts it and locks it again, using a declarative drive table. |
 | `nvd-diff` | yes | – | Prints an [nvd](https://git.sr.ht/~khumba/nvd) package diff (added, removed, and changed versions) on every system activation. |
@@ -57,8 +57,13 @@ nix-suite.shell.enable = true;   # fish + ll / la / udb
 
 ```nix
 nix-suite.npm.enable = true;
-# defaults: prefix = ".local/share/npm", cache = ".cache/npm" (under $HOME)
-# then: npm i -g @kilocode/cli   # installs into ~/.local/share/npm, not the store
+# defaults (all under $HOME), each PM can be turned off on its own:
+#   npm:  prefix=.local/share/npm   cache=.cache/npm
+#   yarn: cache=.cache/yarn         global=.local/share/yarn
+#   pnpm: home=.local/share/pnpm    store=.local/share/pnpm/store
+#   bun:  install=.local/share/bun  cache=.cache/bun
+# then: npm i -g @kilocode/cli   # → ~/.local/share/npm, not the store
+#       pnpm add -g … / yarn global add … / bun add -g … use the same layout
 ```
 
 ### rebuild-helpers

@@ -90,6 +90,9 @@
         assert on.programs.bash.shellAliases.nadd == "git -C /etc/nixos add .";
         assert on.nix-suite.npm.enable;
         assert builtins.match ".*NPM_CONFIG_PREFIX.*" on.environment.extraInit != null;
+        assert builtins.match ".*YARN_CACHE_FOLDER.*" on.environment.extraInit != null;
+        assert builtins.match ".*PNPM_HOME.*" on.environment.extraInit != null;
+        assert builtins.match ".*BUN_INSTALL_CACHE_DIR.*" on.environment.extraInit != null;
         {
           modules-eval = pkgs.writeText "nix-suite-eval" ''
             off: ${builtins.unsafeDiscardStringContext off.system.build.toplevel.drvPath}
