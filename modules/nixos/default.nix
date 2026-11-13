@@ -4,6 +4,7 @@
   imports = [
     ./crypt-keeper.nix
     ./gc.nix
+    ./npm.nix
     ./nvd-diff.nix
     ./rebuild-helpers.nix
     ./shell.nix

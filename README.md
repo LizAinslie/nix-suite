@@ -40,6 +40,7 @@ You can also import a single tool, like `nixosModules.gc` or
 | tool | NixOS | home-manager | what it does |
 |---|---|---|---|
 | `shell` | yes | yes | Fish-first helpers: enables `fish`, installs `desktop-file-utils`, and adds `ll` / `la` / `udb` (refresh `.desktop` DBs + restart Vicinae). Fish gets abbreviations; bash/zsh get aliases. |
+| `npm` | yes | yes | User-global npm layout outside the Nix store: `NPM_CONFIG_PREFIX` (`~/.local/share/npm`), `NPM_CONFIG_CACHE` (`~/.cache/npm`), `<prefix>/bin` on `PATH`, and dirs created on login/activation. |
 | `rebuild-helpers` | yes | yes | Shell shortcuts for a flake checkout: `nrs` runs `sudo nixos-rebuild switch --flake <flake>#<host>`, `nfu` runs `nix flake update <flake>`, and `nadd` runs `git -C <flake> add .`. Fish gets abbreviations, and bash and zsh get aliases, but only for the shells you have enabled. |
 | `crypt-keeper` | yes | yes | `crypt-keeper open\|close <alias>` unlocks a LUKS drive and mounts it, or unmounts it and locks it again, using a declarative drive table. |
 | `nvd-diff` | yes | – | Prints an [nvd](https://git.sr.ht/~khumba/nvd) package diff (added, removed, and changed versions) on every system activation. |
@@ -50,6 +51,14 @@ You can also import a single tool, like `nixosModules.gc` or
 ```nix
 nix-suite.shell.enable = true;   # fish + ll / la / udb
 # udb expands to: update-desktop-database … ; systemctl --user try-restart vicinae
+```
+
+### npm
+
+```nix
+nix-suite.npm.enable = true;
+# defaults: prefix = ".local/share/npm", cache = ".cache/npm" (under $HOME)
+# then: npm i -g @kilocode/cli   # installs into ~/.local/share/npm, not the store
 ```
 
 ### rebuild-helpers

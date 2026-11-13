@@ -18,6 +18,7 @@
         default = ./modules/nixos;
         crypt-keeper = ./modules/nixos/crypt-keeper.nix;
         gc = ./modules/nixos/gc.nix;
+        npm = ./modules/nixos/npm.nix;
         nvd-diff = ./modules/nixos/nvd-diff.nix;
         rebuild-helpers = ./modules/nixos/rebuild-helpers.nix;
         shell = ./modules/nixos/shell.nix;
@@ -26,6 +27,7 @@
       homeModules = {
         default = ./modules/home;
         crypt-keeper = ./modules/home/crypt-keeper.nix;
+        npm = ./modules/home/npm.nix;
         rebuild-helpers = ./modules/home/rebuild-helpers.nix;
         shell = ./modules/home/shell.nix;
       };
@@ -62,6 +64,7 @@
               nix-suite = {
                 rebuild-helpers.enable = true;
                 shell.enable = true;
+                npm.enable = true;
                 nvd-diff.enable = true;
                 gc.enable = true;
                 crypt-keeper = {
@@ -85,6 +88,8 @@
         assert on.programs.fish.shellAbbrs.ll == "ls -l";
         assert on.programs.zsh.shellAliases.nrs == expectedNrs;
         assert on.programs.bash.shellAliases.nadd == "git -C /etc/nixos add .";
+        assert on.nix-suite.npm.enable;
+        assert builtins.match ".*NPM_CONFIG_PREFIX.*" on.environment.extraInit != null;
         {
           modules-eval = pkgs.writeText "nix-suite-eval" ''
             off: ${builtins.unsafeDiscardStringContext off.system.build.toplevel.drvPath}

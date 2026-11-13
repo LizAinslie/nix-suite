@@ -3,6 +3,7 @@
 {
   imports = [
     ./crypt-keeper.nix
+    ./npm.nix
     ./rebuild-helpers.nix
     ./shell.nix
   ];
