@@ -93,6 +93,7 @@
         assert builtins.match ".*YARN_CACHE_FOLDER.*" on.environment.extraInit != null;
         assert builtins.match ".*PNPM_HOME.*" on.environment.extraInit != null;
         assert builtins.match ".*BUN_INSTALL_CACHE_DIR.*" on.environment.extraInit != null;
+        assert builtins.match ".*fish_add_path -g [$]PNPM_HOME [$]PNPM_HOME/bin.*" on.programs.fish.shellInit != null;
         {
           modules-eval = pkgs.writeText "nix-suite-eval" ''
             off: ${builtins.unsafeDiscardStringContext off.system.build.toplevel.drvPath}

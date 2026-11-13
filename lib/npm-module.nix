@@ -64,6 +64,7 @@ let
   ''
   + lib.optionalString cfg.pnpm.enable ''
     _nix_suite_npm_path_prepend "$PNPM_HOME"
+    _nix_suite_npm_path_prepend "$PNPM_HOME/bin"
   ''
   + lib.optionalString cfg.bun.enable ''
     _nix_suite_npm_path_prepend "$BUN_INSTALL/bin"
@@ -71,6 +72,28 @@ let
   + ''
     unset -f _nix_suite_npm_path_prepend
   '';
+
+  fishExpr = p: if isAbsolute p then lib.escapeShellArg p else "$HOME/${p}";
+  fishInit =
+    ''
+      set -q NPM_CONFIG_PREFIX; or set -gx NPM_CONFIG_PREFIX ${fishExpr paths.npmPrefix}
+      set -q NPM_CONFIG_CACHE; or set -gx NPM_CONFIG_CACHE ${fishExpr paths.npmCache}
+      fish_add_path -g $NPM_CONFIG_PREFIX/bin
+    ''
+    + lib.optionalString cfg.yarn.enable ''
+      set -q YARN_CACHE_FOLDER; or set -gx YARN_CACHE_FOLDER ${fishExpr paths.yarnCache}
+      set -q YARN_GLOBAL_FOLDER; or set -gx YARN_GLOBAL_FOLDER ${fishExpr paths.yarnGlobal}
+    ''
+    + lib.optionalString cfg.pnpm.enable ''
+      set -q PNPM_HOME; or set -gx PNPM_HOME ${fishExpr paths.pnpmHome}
+      set -q npm_config_store_dir; or set -gx npm_config_store_dir ${fishExpr paths.pnpmStore}
+      fish_add_path -g $PNPM_HOME $PNPM_HOME/bin
+    ''
+    + lib.optionalString cfg.bun.enable ''
+      set -q BUN_INSTALL; or set -gx BUN_INSTALL ${fishExpr paths.bunInstall}
+      set -q BUN_INSTALL_CACHE_DIR; or set -gx BUN_INSTALL_CACHE_DIR ${fishExpr paths.bunCache}
+      fish_add_path -g $BUN_INSTALL/bin
+    '';
 
   mkdirExtraInit =
     let
@@ -83,7 +106,7 @@ let
         "\"$YARN_GLOBAL_FOLDER\""
       ]
       ++ lib.optionals cfg.pnpm.enable [
-        "\"$PNPM_HOME\""
+        "\"$PNPM_HOME/bin\""
         "\"$npm_config_store_dir\""
       ]
       ++ lib.optionals cfg.bun.enable [
@@ -226,7 +249,10 @@ in
 
         sessionPath =
           [ "${npmPrefix}/bin" ]
-          ++ lib.optional cfg.pnpm.enable pnpmHome
+          ++ lib.optionals cfg.pnpm.enable [
+            pnpmHome
+            "${pnpmHome}/bin"
+          ]
           ++ lib.optional cfg.bun.enable "${bunInstall}/bin";
 
         mkdirArgs = lib.escapeShellArgs (
@@ -239,7 +265,7 @@ in
             yarnGlobal
           ]
           ++ lib.optionals cfg.pnpm.enable [
-            pnpmHome
+            "${pnpmHome}/bin"
             pnpmStore
           ]
           ++ lib.optionals cfg.bun.enable [
@@ -273,6 +299,9 @@ in
     else
       lib.mkMerge [
         { environment.extraInit = extraInit; }
+        (lib.mkIf config.programs.fish.enable {
+          programs.fish.shellInit = fishInit;
+        })
         (lib.mkIf cfg.writeNpmrc {
           environment.etc."npmrc".text = ''
             ; managed by nix-suite.npm
